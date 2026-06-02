@@ -1,0 +1,9 @@
+{
+  "all": false,
+  "check-coverage": false,
+  "extension": ["*.ts", "*.mjs", "*.svelte"],
+  "include": ["src/**/*"],
+  "exclude": ["node_modules/**/*"],
+  "reporter": ["text", "html"],
+  "exclude-after-remap": false
+}

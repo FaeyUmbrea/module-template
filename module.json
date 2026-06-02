@@ -1,0 +1,40 @@
+{
+  "id": "{{MODULE_ID}}",
+  "title": "{{MODULE_TITLE}}",
+  "description": "{{MODULE_DESCRIPTION}}",
+  "version": "This is auto replaced",
+  "library": "false",
+  "persistentStorage": true,
+  "manifestPlusVersion": "1.2.0",
+  "compatibility": {
+    "minimum": 13.344,
+    "verified": 14,
+    "maximum": 14
+  },
+  "authors": [
+    {
+      "name": "{{AUTHOR_NAME}}",
+      "url": "{{AUTHOR_URL}}"
+    }
+  ],
+  "relationships": {
+    "systems": [],
+    "requires": []
+  },
+  "esmodules": ["dist/{{MODULE_ID}}.js"],
+  "styles": ["dist/{{MODULE_ID}}.css"],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
+  "url": "This is auto replaced",
+  "socket": true,
+  "manifest": "This is auto replaced",
+  "download": "This is auto replaced",
+  "license": "AGPL-3.0-only",
+  "readme": "https://github.com/{{GITHUB_USER}}/{{MODULE_ID}}/blob/master/README.md",
+  "media": []
+}
