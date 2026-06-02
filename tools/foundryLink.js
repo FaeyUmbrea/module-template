@@ -158,6 +158,6 @@ async function foundryLink() {
 foundryLink()
 	.catch((err) => {
 		console.error(err.message ?? err);
-		process.exitCode = 1;
+		globalThis.process.exitCode = 1;
 	})
 	.finally(closeQuestions);
