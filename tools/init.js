@@ -246,10 +246,12 @@ function stepMarkerPreprocessing(enabledFeatures) {
 // Step 3: package.json structural prune
 // ---------------------------------------------------------------------------
 
-function stepPrunePackageJson(enabledFeatures) {
+function stepPrunePackageJson(enabledFeatures, version) {
 	console.warn('Step 3: Pruning package.json...');
 	const pkgPath = path.join(ROOT, 'package.json');
 	const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+
+	pkg.version = version;
 
 	// Collect dep keys to remove.
 	const removeDeps = new Set();
@@ -302,13 +304,29 @@ function stepPrunePackageJson(enabledFeatures) {
 // Step 4: module.json structural
 // ---------------------------------------------------------------------------
 
-function stepModuleJson(enabledFeatures) {
+// Foundry version fields are JSON numbers; coerce when the input is numeric.
+function asVersion(value) {
+	const num = Number(value);
+	return Number.isFinite(num) ? num : value;
+}
+
+function stepModuleJson(enabledFeatures, versions) {
 	console.warn('Step 4: Updating module.json...');
 	const modPath = path.join(ROOT, 'module.json');
 	const mod = JSON.parse(fs.readFileSync(modPath, 'utf8'));
 
+	mod.compatibility = {
+		minimum: asVersion(versions.compatMin),
+		verified: asVersion(versions.compatVerified),
+		maximum: asVersion(versions.compatMax),
+	};
+
 	if (!enabledFeatures.has('i18n')) {
 		mod.languages = [];
+	}
+
+	if (!enabledFeatures.has('styles')) {
+		mod.styles = [];
 	}
 
 	fs.writeFileSync(modPath, JSON.stringify(mod, null, 2) + '\n', 'utf8');
@@ -330,6 +348,10 @@ function stepDeleteFeatureFiles(enabledFeatures) {
 
 	if (!enabledFeatures.has('svelte')) {
 		rmrf(path.join(ROOT, 'src', 'svelte'));
+	}
+
+	if (!enabledFeatures.has('styles')) {
+		rmrf(path.join(ROOT, 'src', 'styles'));
 	}
 
 	if (!enabledFeatures.has('unit')) {
@@ -406,7 +428,13 @@ async function main() {
 	const authorEmail = await get('author-email', 'Author Email', 'faey@void.monster');
 	const githubUser = await get('github', 'GitHub Username', 'FaeyUmbrea');
 
+	const version = await get('version', 'Module version', '0.0.1');
+	const compatMin = await get('compat-min', 'Foundry compatibility — minimum', '13.344');
+	const compatVerified = await get('compat-verified', 'Foundry compatibility — verified', '14');
+	const compatMax = await get('compat-max', 'Foundry compatibility — maximum', '14');
+
 	const featSvelte = await getFeature('svelte', 'svelte (Svelte 5 UI)');
+	const featStyles = await getFeature('styles', 'styles (dedicated Stylus stylesheet)');
 	const featUnit = await getFeature('unit', 'unit (Vitest unit tests)');
 	const featE2e = await getFeature('e2e', 'e2e (Playwright tests)');
 	const featI18n = await getFeature('i18n', 'i18n (localisation)');
@@ -417,6 +445,7 @@ async function main() {
 
 	const enabledFeatures = new Set([
 		...(featSvelte ? ['svelte'] : []),
+		...(featStyles ? ['styles'] : []),
 		...(featUnit ? ['unit'] : []),
 		...(featE2e ? ['e2e'] : []),
 		...(featI18n ? ['i18n'] : []),
@@ -430,6 +459,8 @@ async function main() {
 	console.warn(`  author:      ${authorName} <${authorEmail}>`);
 	console.warn(`  author url:  ${authorUrl}`);
 	console.warn(`  github:      ${githubUser}`);
+	console.warn(`  version:     ${version}`);
+	console.warn(`  foundry:     min ${compatMin} / verified ${compatVerified} / max ${compatMax}`);
 	console.warn(`  features:    ${[...enabledFeatures].join(', ') || '(none)'}`);
 	console.warn('');
 
@@ -445,8 +476,8 @@ async function main() {
 
 	stepTokenReplacement(tokenMap);
 	stepMarkerPreprocessing(enabledFeatures);
-	stepPrunePackageJson(enabledFeatures);
-	stepModuleJson(enabledFeatures);
+	stepPrunePackageJson(enabledFeatures, version);
+	stepModuleJson(enabledFeatures, { compatMin, compatVerified, compatMax });
 	stepDeleteFeatureFiles(enabledFeatures);
 
 	if (!keepInit) {

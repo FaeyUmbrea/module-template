@@ -17,6 +17,19 @@ strips disabled-feature code, and prunes `package.json` in place.
 
 GitHub repo path is always `{{GITHUB_USER}}/{{MODULE_ID}}`.
 
+## Versions
+
+These are set structurally in `module.json` / `package.json` (not tokens):
+
+| Flag | Default | Meaning |
+|---|---|---|
+| `--version` | `0.0.1` | Initial `package.json` version |
+| `--compat-min` | `13.344` | Foundry `compatibility.minimum` |
+| `--compat-verified` | `14` | Foundry `compatibility.verified` |
+| `--compat-max` | `14` | Foundry `compatibility.maximum` |
+
+Numeric inputs are written as JSON numbers (e.g. `14`, `13.344`).
+
 ## Feature Flags
 
 All features are **on by default**. Pass `--features a,b,c` to enable only specific ones.
@@ -24,6 +37,7 @@ All features are **on by default**. Pass `--features a,b,c` to enable only speci
 | Flag | What it controls |
 |---|---|
 | `svelte` | Svelte 5 UI (vite-plugin-svelte, svelte-preprocess, eslint svelte support, `src/svelte/`, svelte mount in `index.ts`) |
+| `styles` | Dedicated Stylus stylesheet (`src/styles/`, the `index.ts` style import, `styles` in `module.json`) |
 | `unit` | Vitest unit tests (`src/example.test.ts`, `test:unit` script) |
 | `e2e` | Playwright tests (`playwright.config.js`, `tests/`, `test:e2e` scripts) |
 | `i18n` | Localisation (`lang/`, `languages` in `module.json`) |
@@ -49,7 +63,9 @@ node tools/init.js \
   --author-url https://github.com/yourname \
   --author-email you@example.com \
   --github yourname \
-  --features svelte,unit,e2e,i18n \
+  --version 0.0.1 \
+  --compat-min 14 --compat-verified 14 --compat-max 14 \
+  --features svelte,styles,unit,e2e,i18n \
   --yes
 ```
 

@@ -30,7 +30,7 @@ This repository is a template. After cloning, run:
 node tools/init.js
 ```
 
-The script prompts for your module id, title, description, author info, and which features to enable (`svelte`, `unit`, `e2e`, `i18n`). It replaces placeholder tokens, strips disabled-feature code, and prunes unused dependencies from `package.json`.
+The script prompts for your module id, title, description, author info, and which features to enable (`svelte`, `styles`, `unit`, `e2e`, `i18n`). It replaces placeholder tokens, strips disabled-feature code, and prunes unused dependencies from `package.json`.
 
 For non-interactive use:
 
@@ -38,5 +38,5 @@ For non-interactive use:
 node tools/init.js --id my-module --title "My Module" --description "Does things" \
   --author "Your Name" --author-url https://github.com/yourname \
   --author-email you@example.com --github yourname \
-  --features svelte,unit,e2e,i18n --yes
+  --features svelte,styles,unit,e2e,i18n --yes
 ```
