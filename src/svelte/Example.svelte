@@ -1,11 +1,11 @@
-<script lang="ts">
+<script lang='ts'>
 </script>
 
-<div class="example">
-	{{MODULE_TITLE}}
+<div class='example'>
+	{{ MODULE_TITLE }}
 </div>
 
-<style lang="stylus">
+<style lang='stylus'>
 .example
 	display block
 </style>

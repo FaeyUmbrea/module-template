@@ -1,8 +1,8 @@
 // #if svelte
 import { svelte } from '@sveltejs/vite-plugin-svelte';
-import { sveltePreprocess } from 'svelte-preprocess';
 // #endif
 import { visualizer } from 'rollup-plugin-visualizer';
+import { sveltePreprocess } from 'svelte-preprocess';
 import { defineConfig } from 'vite';
 // #if unit
 import { configDefaults } from 'vitest/config';

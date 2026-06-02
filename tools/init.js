@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as process from 'node:process';
@@ -103,8 +102,23 @@ const FEATURE_SCRIPTS = {
 // ---------------------------------------------------------------------------
 
 const BINARY_EXTENSIONS = new Set([
-	'.cjs', '.gz', '.png', '.jpg', '.jpeg', '.gif', '.ico', '.woff', '.woff2',
-	'.ttf', '.otf', '.eot', '.mp3', '.mp4', '.zip', '.tar', '.7z',
+	'.cjs',
+	'.gz',
+	'.png',
+	'.jpg',
+	'.jpeg',
+	'.gif',
+	'.ico',
+	'.woff',
+	'.woff2',
+	'.ttf',
+	'.otf',
+	'.eot',
+	'.mp3',
+	'.mp4',
+	'.zip',
+	'.tar',
+	'.7z',
 ]);
 
 function isBinaryPath(filePath) {
@@ -283,11 +297,11 @@ function stepPrunePackageJson(enabledFeatures, version) {
 		const hasUnit = enabledFeatures.has('unit');
 		const hasE2e = enabledFeatures.has('e2e');
 		if (hasUnit && hasE2e) {
-			pkg.scripts['test'] = 'yarn test:e2e && yarn test:unit';
+			pkg.scripts.test = 'yarn test:e2e && yarn test:unit';
 		} else if (hasUnit) {
-			pkg.scripts['test'] = 'vitest run';
+			pkg.scripts.test = 'vitest run';
 		} else if (hasE2e) {
-			pkg.scripts['test'] = 'yarn playwright test';
+			pkg.scripts.test = 'yarn playwright test';
 		}
 		// If neither, leave test removed.
 	}
@@ -296,7 +310,13 @@ function stepPrunePackageJson(enabledFeatures, version) {
 		delete pkg.scripts?.[s];
 	}
 
-	fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n', 'utf8');
+	// The uuid resolution only patches nyc's coverage tooling; drop it without coverage.
+	if (!enabledFeatures.has('coverage') && pkg.resolutions) {
+		delete pkg.resolutions.uuid;
+		if (Object.keys(pkg.resolutions).length === 0) delete pkg.resolutions;
+	}
+
+	fs.writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`, 'utf8');
 	console.warn('  package.json updated.');
 }
 
@@ -329,7 +349,7 @@ function stepModuleJson(enabledFeatures, versions) {
 		mod.styles = [];
 	}
 
-	fs.writeFileSync(modPath, JSON.stringify(mod, null, 2) + '\n', 'utf8');
+	fs.writeFileSync(modPath, `${JSON.stringify(mod, null, 2)}\n`, 'utf8');
 	console.warn('  module.json updated.');
 }
 
@@ -395,7 +415,7 @@ function stepSelfDelete() {
 
 async function main() {
 	const args = parseArgs(process.argv.slice(2));
-	const yes = !!args['yes'];
+	const yes = !!args.yes;
 	const keepInit = !!args['keep-init'];
 
 	let rl = null;
@@ -410,8 +430,8 @@ async function main() {
 	}
 
 	async function getFeature(name, label) {
-		if (args['features']) {
-			const list = String(args['features']).split(',').map(s => s.trim());
+		if (args.features) {
+			const list = String(args.features).split(',').map(s => s.trim());
 			return list.includes(name);
 		}
 		if (yes) return true;
