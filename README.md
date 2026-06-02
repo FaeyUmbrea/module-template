@@ -32,6 +32,8 @@ node tools/init.js
 
 The script prompts for your module id, title, description, author info, and which features to enable (`svelte`, `styles`, `unit`, `e2e`, `i18n`). It replaces placeholder tokens, strips disabled-feature code, and prunes unused dependencies from `package.json`.
 
+The GitHub Actions workflows ship disabled (`.github/workflows/*.yml.disabled`) so no CI runs until you scaffold; `tools/init.js` activates them by stripping the `.disabled` suffix.
+
 For non-interactive use:
 
 ```sh

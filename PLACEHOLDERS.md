@@ -70,3 +70,7 @@ node tools/init.js \
 ```
 
 Pass `--keep-init` to prevent the script from deleting itself and this file after running.
+
+## CI workflows
+
+The GitHub Actions workflows ship as `.github/workflows/*.yml.disabled` so that **no CI runs in the template or in a fresh "Use this template" copy**. `tools/init.js` strips the `.disabled` suffix during setup, activating them on your instantiated repo. (GitHub only runs `*.yml`/`*.yaml` directly in `.github/workflows/`.)

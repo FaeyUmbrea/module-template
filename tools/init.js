@@ -354,6 +354,26 @@ function stepModuleJson(enabledFeatures, versions) {
 }
 
 // ---------------------------------------------------------------------------
+// Activate CI: workflows ship as `*.disabled` so GitHub ignores them in the
+// template; setup strips the suffix so they run on the instantiated repo.
+// ---------------------------------------------------------------------------
+
+function stepActivateWorkflows() {
+	console.warn('Activating CI workflows...');
+	const workflowsDir = path.join(ROOT, '.github', 'workflows');
+	if (!fs.existsSync(workflowsDir)) return;
+	let count = 0;
+	for (const entry of fs.readdirSync(workflowsDir)) {
+		if (!entry.endsWith('.disabled')) continue;
+		const from = path.join(workflowsDir, entry);
+		const to = path.join(workflowsDir, entry.slice(0, -'.disabled'.length));
+		fs.renameSync(from, to);
+		count++;
+	}
+	console.warn(`  Activated ${count} workflow(s).`);
+}
+
+// ---------------------------------------------------------------------------
 // Step 5: Delete feature files for disabled features
 // ---------------------------------------------------------------------------
 
@@ -495,6 +515,7 @@ async function main() {
 	};
 
 	stepTokenReplacement(tokenMap);
+	stepActivateWorkflows();
 	stepMarkerPreprocessing(enabledFeatures);
 	stepPrunePackageJson(enabledFeatures, version);
 	stepModuleJson(enabledFeatures, { compatMin, compatVerified, compatMax });
