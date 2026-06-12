@@ -5,7 +5,7 @@ on:
   push:
 
 jobs:
-  qodana:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
