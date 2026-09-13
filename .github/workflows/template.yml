@@ -2,6 +2,8 @@ name: Template
 
 on:
   push:
+    branches:
+      - main
   pull_request:
 
 permissions:
@@ -36,7 +38,7 @@ jobs:
         working-directory: ${{ runner.temp }}/code-module
         run: |
           corepack enable
-          yarn install
+          yarn install --no-immutable
           yarn install --immutable
           yarn exec tsc --noEmit
           yarn lint
