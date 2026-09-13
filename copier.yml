@@ -40,7 +40,7 @@ _exclude:
   - "[[ 'src/public-api.ts' if module_kind == 'content' or not exports_api_types or adopt_existing_module else '.copier-never' ]]"
   - "[[ 'tsconfig.api-types.json' if module_kind == 'content' or not exports_api_types else '.copier-never' ]]"
   - "[[ 'tools/build-api-types.mjs' if module_kind == 'content' or not exports_api_types else '.copier-never' ]]"
-  - "[[ 'playwright.config.js' if module_kind == 'content' or not browser_tests else '.copier-never' ]]"
+  - "[[ 'playwright.config.js' if module_kind == 'content' or not browser_tests or adopt_existing_module else '.copier-never' ]]"
   - "[[ 'tests' if module_kind == 'content' or not browser_tests else '.copier-never' ]]"
   - "[[ 'lang' if not localization else '.copier-never' ]]"
 
