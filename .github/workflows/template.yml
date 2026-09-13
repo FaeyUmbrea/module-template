@@ -29,6 +29,7 @@ jobs:
           --data module_id=template-test
           --data module_title='Template Test'
           --data module_description='Rendered by template CI'
+          --data exports_api_types=true
           "$GITHUB_WORKSPACE" "$RUNNER_TEMP/code-module"
 
       - name: Verify code module
@@ -36,12 +37,20 @@ jobs:
         run: |
           corepack enable
           yarn install
-          yarn typecheck
+          yarn install --immutable
+          yarn exec tsc --noEmit
           yarn lint
           yarn test:unit
           yarn build
+          API_TYPES_VERSION=v1.2.3 yarn build:api-types
+          mkdir -p release
+          tar -czf release/template-test-api-types.tgz -C .release/api-types package
           node tools/prepare-release.mjs module.json release/module.json v1.2.3 https://github.com template/test
           test "$(jq -r .version release/module.json)" = "1.2.3"
+          for artifact_path in dist lang templates LICENSE README.md; do cp -R "$artifact_path" release/; done
+          (cd release && zip -r ../module.zip .)
+          unzip -t module.zip
+          tar -tzf release/template-test-api-types.tgz
 
       - name: Render content module
         run: >-
@@ -60,3 +69,32 @@ jobs:
           test ! -e "$RUNNER_TEMP/content-module/package.json"
           test ! -e "$RUNNER_TEMP/content-module/.github/workflows/release.yml"
           test ! -e "$RUNNER_TEMP/content-module/tools/prepare-release.mjs"
+
+      - name: Render project-owned content module
+        run: >-
+          pipx run copier copy --trust --vcs-ref HEAD --defaults
+          --data module_id=project-owned-content
+          --data module_title='Project-owned Content'
+          --data module_description='Preserves project-owned generated files'
+          --data module_kind=content
+          --data adopt_existing_module=true
+          --data manage_manifest=false
+          --data checks_workflow=false
+          --data community_files=false
+          --data manage_gitignore=false
+          --data has_templates=false
+          --data release_strategy=custom
+          --data localization=false
+          "$GITHUB_WORKSPACE" "$RUNNER_TEMP/project-owned-content"
+
+      - name: Verify project-owned exclusions
+        run: |
+          test -e "$RUNNER_TEMP/project-owned-content/.copier-answers.yml"
+          test -e "$RUNNER_TEMP/project-owned-content/.editorconfig"
+          test -e "$RUNNER_TEMP/project-owned-content/.gitattributes"
+          test ! -e "$RUNNER_TEMP/project-owned-content/module.json"
+          test ! -e "$RUNNER_TEMP/project-owned-content/.gitignore"
+          test ! -e "$RUNNER_TEMP/project-owned-content/LICENSE"
+          test ! -e "$RUNNER_TEMP/project-owned-content/README.md"
+          test ! -e "$RUNNER_TEMP/project-owned-content/templates"
+          test -z "$(find "$RUNNER_TEMP/project-owned-content/.github" -type f -print -quit)"

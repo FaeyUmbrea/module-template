@@ -27,7 +27,9 @@ jobs:
 
       - name: Verify
         run: |
-          yarn typecheck
+[% if typecheck %]
+          yarn exec tsc --noEmit
+[% endif %]
           yarn lint
 [% if unit_tests %]          yarn test:unit
 [% endif %]
@@ -49,9 +51,9 @@ jobs:
 
       - name: Assemble module archive
         run: |
-          for path in assets dist lang packs scripts storage styles templates LICENSE README.md; do
-            if [ -e "$path" ]; then
-              cp -R "$path" release/
+          for artifact_path in assets dist lang packs scripts storage styles templates LICENSE README.md; do
+            if [ -e "$artifact_path" ]; then
+              cp -R "$artifact_path" release/
             fi
           done
           (cd release && zip -r ../module.zip .)

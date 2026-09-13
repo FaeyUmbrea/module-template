@@ -21,6 +21,15 @@ _exclude:
   - tools/init.js
   - tools/merge-coverage.js
   - yarn.lock
+  - "[[ '.gitignore' if not manage_gitignore else '.copier-never' ]]"
+  - "[[ '.github/FUNDING.yml' if not community_files else '.copier-never' ]]"
+  - "[[ '.github/ISSUE_TEMPLATE' if not community_files else '.copier-never' ]]"
+  - "[[ 'CHANGELOG.md' if not community_files else '.copier-never' ]]"
+  - "[[ 'LICENSE' if not community_files else '.copier-never' ]]"
+  - "[[ 'README.md' if not community_files else '.copier-never' ]]"
+  - "[[ 'SECURITY.md' if not community_files else '.copier-never' ]]"
+  - "[[ 'module.json' if not manage_manifest else '.copier-never' ]]"
+  - "[[ '.github/workflows/checks.yml' if not checks_workflow else '.copier-never' ]]"
   - "[[ '.github/workflows/release.yml' if release_strategy == 'custom' else '.copier-never' ]]"
   - "[[ 'tools/prepare-release.mjs' if release_strategy == 'custom' else '.copier-never' ]]"
   - "[[ 'package.json' if module_kind == 'content' or adopt_existing_module else '.copier-never' ]]"
@@ -43,6 +52,7 @@ _exclude:
   - "[[ 'playwright.config.js' if module_kind == 'content' or not browser_tests or adopt_existing_module else '.copier-never' ]]"
   - "[[ 'tests' if module_kind == 'content' or not browser_tests else '.copier-never' ]]"
   - "[[ 'lang' if not localization else '.copier-never' ]]"
+  - "[[ 'templates' if not has_templates else '.copier-never' ]]"
 
 _skip_if_exists:
   - CHANGELOG.md
@@ -105,12 +115,37 @@ adopt_existing_module:
   help: Preserve an existing module's source tree instead of adding template examples
   default: false
 
+manage_manifest:
+  type: bool
+  help: Let Copier manage module.json; disable this when project tooling generates the manifest
+  default: true
+
+checks_workflow:
+  type: bool
+  help: Generate the standard GitHub checks workflow; disable this when the project owns its verification workflow
+  default: true
+
+community_files:
+  type: bool
+  help: Generate the template's readme, changelog, license, security policy, funding file, and issue templates
+  default: true
+
+manage_gitignore:
+  type: bool
+  help: Let Copier manage .gitignore; disable this when generated or private paths require project-owned ignore rules
+  default: true
+
 uses_svelte:
   type: bool
   default: true
   when: "[[ module_kind == 'code' ]]"
 
 uses_styles:
+  type: bool
+  default: true
+  when: "[[ module_kind == 'code' ]]"
+
+typecheck:
   type: bool
   default: true
   when: "[[ module_kind == 'code' ]]"
@@ -132,6 +167,10 @@ localization:
 has_packs:
   type: bool
   default: false
+
+has_templates:
+  type: bool
+  default: true
 
 additional_languages:
   type: yaml

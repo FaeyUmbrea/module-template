@@ -27,9 +27,11 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
+[% if typecheck %]
       - name: Typecheck
-        run: yarn typecheck
+        run: yarn exec tsc --noEmit
 
+[% endif %]
       - name: Lint
         run: yarn lint
 
