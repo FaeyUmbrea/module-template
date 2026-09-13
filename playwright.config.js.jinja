@@ -1,0 +1,26 @@
+import { defineConfig, devices } from '@playwright/test';
+
+export default defineConfig({
+	testDir: './tests',
+	timeout: 45_000,
+	fullyParallel: false,
+	forbidOnly: Boolean(process.env.CI),
+	retries: process.env.CI ? 2 : 0,
+	workers: 1,
+	use: {
+		baseURL: process.env.TEST_URL || 'http://localhost:30001',
+		trace: 'on-first-retry',
+		headless: true,
+	},
+	projects: [
+		{
+			name: 'Desktop Chromium',
+			use: {
+				...devices['Desktop Chrome'],
+				viewport: { width: 1920, height: 1080 },
+			},
+		},
+	],
+	outputDir: 'test-results/playwright',
+});
+

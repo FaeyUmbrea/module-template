@@ -1,0 +1,23 @@
+import type { ModuleApi } from './api.js';
+[% if uses_svelte %]import { mount } from 'svelte';
+[% endif %]
+[% if uses_svelte %]import Example from './svelte/Example.svelte';
+[% endif %]
+[% if uses_styles %]import './styles/main.styl';
+[% endif %]
+
+export const MODULE_ID = '[[ module_id ]]';
+
+export const api: ModuleApi = { id: MODULE_ID };
+
+Hooks.once('init', () => {
+	console.warn(`${MODULE_ID} | Initializing`);
+	const module = game.modules?.get(MODULE_ID);
+	if (module) (module as typeof module & { api: ModuleApi }).api = api;
+});
+
+Hooks.once('ready', () => {
+[% if uses_svelte %]	// Mount module applications where Foundry provides their target elements.
+	void mount;
+	void Example;
+[% endif %]});

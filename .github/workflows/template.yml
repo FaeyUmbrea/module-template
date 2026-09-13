@@ -1,0 +1,62 @@
+name: Template
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Render code module
+        run: >-
+          pipx run copier copy --trust --vcs-ref HEAD --defaults
+          --data module_id=template-test
+          --data module_title='Template Test'
+          --data module_description='Rendered by template CI'
+          "$GITHUB_WORKSPACE" "$RUNNER_TEMP/code-module"
+
+      - name: Verify code module
+        working-directory: ${{ runner.temp }}/code-module
+        run: |
+          corepack enable
+          yarn install
+          yarn typecheck
+          yarn lint
+          yarn test:unit
+          yarn build
+          node tools/prepare-release.mjs module.json release/module.json v1.2.3 https://github.com template/test
+          test "$(jq -r .version release/module.json)" = "1.2.3"
+
+      - name: Render content module
+        run: >-
+          pipx run copier copy --trust --vcs-ref HEAD --defaults
+          --data module_id=content-test
+          --data module_title='Content Test'
+          --data module_description='Rendered by template CI'
+          --data module_kind=content
+          --data release_strategy=custom
+          --data localization=false
+          "$GITHUB_WORKSPACE" "$RUNNER_TEMP/content-module"
+
+      - name: Verify content module
+        run: |
+          jq --exit-status . "$RUNNER_TEMP/content-module/module.json"
+          test ! -e "$RUNNER_TEMP/content-module/package.json"
+          test ! -e "$RUNNER_TEMP/content-module/.github/workflows/release.yml"
+          test ! -e "$RUNNER_TEMP/content-module/tools/prepare-release.mjs"

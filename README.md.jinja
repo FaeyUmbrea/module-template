@@ -1,0 +1,43 @@
+# [[ module_title ]]
+
+[[ module_description ]]
+
+## Development
+
+[% if module_kind == 'code' %]
+```sh
+corepack enable
+yarn install
+yarn dev
+yarn build
+yarn lint
+```
+
+Link the checkout into Foundry's modules directory once with:
+
+```sh
+yarn link:foundry
+```
+[% if exports_api_types %]
+
+## API types
+
+Each release includes `[[ module_id ]]-api-types.tgz`, a private TypeScript package. A consuming module can install the matching release without publishing anything to npm:
+
+```sh
+yarn add --dev @[[ github_owner | lower ]]/[[ module_id ]]-api-types@https://github.com/[[ github_owner ]]/[[ repository_name ]]/releases/download/vX.Y.Z/[[ module_id ]]-api-types.tgz
+```
+
+Use `import type` from that package; it deliberately contains declarations only, not runtime code.
+[% endif %]
+[% else %]
+This is a content-only Foundry VTT module. Its release workflow packages the manifest, compendiums, assets, scripts, styles, and localisation files that exist in the repository.
+[% endif %]
+
+## Template updates
+
+This repository was created from `FaeyUmbrea/module-template`. With a clean worktree, update its shared machinery using:
+
+```sh
+uvx copier update
+```

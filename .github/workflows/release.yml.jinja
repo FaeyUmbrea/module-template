@@ -1,0 +1,100 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+[% if module_kind == 'code' %]
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Verify
+        run: |
+          yarn typecheck
+          yarn lint
+[% if unit_tests %]          yarn test:unit
+[% endif %]
+      - name: Build
+        run: yarn build
+[% endif %]
+
+      - name: Prepare release manifest
+        run: node tools/prepare-release.mjs module.json release/module.json "$GITHUB_REF_NAME" "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY"
+[% if module_kind == 'code' and exports_api_types %]
+
+      - name: Build API type artifact
+        env:
+          API_TYPES_VERSION: ${{ github.ref_name }}
+        run: |
+          yarn build:api-types
+          tar -czf release/[[ module_id ]]-api-types.tgz -C .release/api-types package
+[% endif %]
+
+      - name: Assemble module archive
+        run: |
+          for path in assets dist lang packs scripts storage styles templates LICENSE README.md; do
+            if [ -e "$path" ]; then
+              cp -R "$path" release/
+            fi
+          done
+          (cd release && zip -r ../module.zip .)
+
+      - name: Create or update GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 || gh release create "$GITHUB_REF_NAME" --generate-notes --title "$GITHUB_REF_NAME"
+          gh release upload "$GITHUB_REF_NAME" release/module.json module.zip[% if module_kind == 'code' and exports_api_types %] release/[[ module_id ]]-api-types.tgz[% endif %] --clobber
+[% if publish_to_foundry %]
+
+      - name: Register release with Foundry
+        env:
+          FVTT_TOKEN: ${{ secrets.FVTT_TOKEN }}
+        run: |
+          jq -n \
+            --arg id "$(jq -r .id release/module.json)" \
+            --arg version "$(jq -r .version release/module.json)" \
+            --arg manifest "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/$GITHUB_REF_NAME/module.json" \
+            --arg notes "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/tag/$GITHUB_REF_NAME" \
+            --argjson compatibility "$(jq .compatibility release/module.json)" \
+            '{id: $id, release: {version: $version, manifest: $manifest, notes: $notes, compatibility: $compatibility}}' \
+            > release/foundry-payload.json
+          curl --fail-with-body \
+            --request POST \
+            --header 'Content-Type: application/json' \
+            --header "Authorization: $FVTT_TOKEN" \
+            --data @release/foundry-payload.json \
+            https://api.foundryvtt.com/_api/packages/release_version/
+[% endif %][% if discord_notifications %]
+
+      - name: Notify Discord
+        env:
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+        run: |
+          jq -n \
+            --arg content "Released [[ module_title ]] $GITHUB_REF_NAME: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/tag/$GITHUB_REF_NAME" \
+            '{content: $content}' \
+            > release/discord-payload.json
+          curl --fail-with-body \
+            --request POST \
+            --header 'Content-Type: application/json' \
+            --data @release/discord-payload.json \
+            "$WEBHOOK_URL"
+[% endif %]

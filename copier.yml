@@ -1,0 +1,172 @@
+_min_copier_version: "9.8.0"
+_answers_file: .copier-answers.yml
+_templates_suffix: .jinja
+_envops:
+  variable_start_string: "[["
+  variable_end_string: "]]"
+  block_start_string: "[%"
+  block_end_string: "%]"
+  comment_start_string: "[#"
+  comment_end_string: "#]"
+  keep_trailing_newline: true
+
+_exclude:
+  - .git
+  - .github/README.md
+  - .github/workflows/template.yml
+  - .yarn
+  - .nycrc
+  - copier.yml
+  - PLACEHOLDERS.md
+  - tools/init.js
+  - tools/merge-coverage.js
+  - yarn.lock
+  - "[[ '.github/workflows/release.yml' if release_strategy == 'custom' else '.copier-never' ]]"
+  - "[[ 'tools/prepare-release.mjs' if release_strategy == 'custom' else '.copier-never' ]]"
+  - "[[ 'package.json' if module_kind == 'content' else '.copier-never' ]]"
+  - "[[ 'vite.config.ts' if module_kind == 'content' else '.copier-never' ]]"
+  - "[[ 'eslint.config.js' if module_kind == 'content' else '.copier-never' ]]"
+  - "[[ 'tsconfig.json' if module_kind == 'content' else '.copier-never' ]]"
+  - "[[ '.yarnrc.yml' if module_kind == 'content' else '.copier-never' ]]"
+  - "[[ 'tools/foundryLink.js' if module_kind == 'content' else '.copier-never' ]]"
+  - "[[ 'src/index.ts' if module_kind == 'content' else '.copier-never' ]]"
+  - "[[ 'src/api.ts' if module_kind == 'content' else '.copier-never' ]]"
+  - "[[ 'src/global.d.ts' if module_kind == 'content' else '.copier-never' ]]"
+  - "[[ 'src/styles.d.ts' if module_kind == 'content' else '.copier-never' ]]"
+  - "[[ 'src/svelte' if module_kind == 'content' or not uses_svelte else '.copier-never' ]]"
+  - "[[ 'svelte.config.js' if module_kind == 'content' or not uses_svelte else '.copier-never' ]]"
+  - "[[ 'src/styles' if module_kind == 'content' or not uses_styles else '.copier-never' ]]"
+  - "[[ 'src/example.test.ts' if module_kind == 'content' or not unit_tests else '.copier-never' ]]"
+  - "[[ 'src/public-api.ts' if module_kind == 'content' or not exports_api_types else '.copier-never' ]]"
+  - "[[ 'tsconfig.api-types.json' if module_kind == 'content' or not exports_api_types else '.copier-never' ]]"
+  - "[[ 'tools/build-api-types.mjs' if module_kind == 'content' or not exports_api_types else '.copier-never' ]]"
+  - "[[ 'playwright.config.js' if module_kind == 'content' or not browser_tests else '.copier-never' ]]"
+  - "[[ 'tests' if module_kind == 'content' or not browser_tests else '.copier-never' ]]"
+  - "[[ 'lang' if not localization else '.copier-never' ]]"
+
+_skip_if_exists:
+  - CHANGELOG.md
+  - LICENSE
+  - README.md
+  - assets/**
+  - lang/**
+  - packs/**
+  - src/**
+  - storage/**
+  - templates/**
+  - tests/**
+
+module_id:
+  type: str
+  help: Lowercase Foundry module ID (hyphens only)
+
+module_title:
+  type: str
+  help: Human-readable module title
+
+module_description:
+  type: str
+  help: Short description shown by Foundry
+
+github_owner:
+  type: str
+  default: FaeyUmbrea
+
+repository_name:
+  type: str
+  default: "[[ module_id ]]"
+
+default_branch:
+  type: str
+  default: main
+
+author_name:
+  type: str
+  default: Faey Umbrea
+
+author_url:
+  type: str
+  default: "https://github.com/[[ github_owner ]]"
+
+author_discord:
+  type: str
+  default: Faey#0001
+
+module_kind:
+  type: str
+  help: Code modules use Vite and TypeScript; content modules only package static content
+  choices:
+    Code module: code
+    Content-only module: content
+  default: code
+
+uses_svelte:
+  type: bool
+  default: true
+  when: "[[ module_kind == 'code' ]]"
+
+uses_styles:
+  type: bool
+  default: true
+  when: "[[ module_kind == 'code' ]]"
+
+unit_tests:
+  type: bool
+  default: true
+  when: "[[ module_kind == 'code' ]]"
+
+browser_tests:
+  type: bool
+  default: false
+  when: "[[ module_kind == 'code' ]]"
+
+localization:
+  type: bool
+  default: true
+
+has_packs:
+  type: bool
+  default: false
+
+uses_socket:
+  type: bool
+  default: false
+
+persistent_storage:
+  type: bool
+  default: false
+
+foundry_minimum:
+  type: str
+  default: "13.344"
+
+foundry_verified:
+  type: str
+  default: "14"
+
+foundry_maximum:
+  type: str
+  default: "14"
+
+release_strategy:
+  type: str
+  help: Standard creates a GitHub release and optionally registers it with Foundry; custom keeps project-owned release tooling
+  choices:
+    Standard GitHub release: github
+    Project-owned release process: custom
+  default: github
+
+publish_to_foundry:
+  type: bool
+  default: true
+  when: "[[ release_strategy == 'github' ]]"
+
+discord_notifications:
+  type: bool
+  default: false
+  when: "[[ release_strategy == 'github' ]]"
+
+exports_api_types:
+  type: bool
+  default: false
+  when: "[[ module_kind == 'code' ]]"

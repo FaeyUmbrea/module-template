@@ -1,0 +1,39 @@
+{
+	"name": "[[ module_id ]]",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"packageManager": "yarn@4.9.2",
+	"scripts": {
+		"build": "vite build",
+		"dev": "vite --host",
+		"watch": "vite build --watch",
+		"preview": "vite preview",
+		"typecheck": "tsc --noEmit",
+		"lint": "eslint src tools vite.config.ts eslint.config.js",
+		"lint:fix": "eslint src tools vite.config.ts eslint.config.js --fix",
+		"link:foundry": "node tools/foundryLink.js"[% if exports_api_types %],
+		"build:api-types": "node tools/build-api-types.mjs"[% endif %][% if unit_tests %],
+		"test:unit": "vitest run"[% endif %][% if browser_tests %],
+		"test:e2e": "playwright test",
+		"test:e2e:headed": "playwright test --headed"[% endif %]
+	},
+	"devDependencies": {
+		"@antfu/eslint-config": "^9.0.0",
+		"eslint": "^10.4.0",
+		"eslint-plugin-antfu": "^3.2.3",
+		"eslint-plugin-format": "^2.0.1",
+		"fvtt-types": "13.346.0-beta.20251209192131",
+		"globals": "^17.6.0",
+		"rollup-plugin-visualizer": "^7.0.1",
+		"typescript": "^5.9.3",
+		"vite": "^8.0.13"[% if uses_svelte %],
+		"@sveltejs/vite-plugin-svelte": "^7.1.2",
+		"eslint-plugin-svelte": "^3.17.1",
+		"svelte": "^5.55.7"[% endif %][% if uses_styles %],
+		"stylus": "^0.64.0"[% endif %][% if unit_tests %],
+		"jsdom": "^29.1.1",
+		"vitest": "^4.1.6"[% endif %][% if browser_tests %],
+		"@playwright/test": "^1.60.0"[% endif %]
+	}
+}

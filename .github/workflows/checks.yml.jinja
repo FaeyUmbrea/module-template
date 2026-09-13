@@ -1,0 +1,55 @@
+name: Checks
+
+on:
+  pull_request:
+  push:
+    branches:
+      - "[[ default_branch ]]"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+[% if module_kind == 'code' %]
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Typecheck
+        run: yarn typecheck
+
+      - name: Lint
+        run: yarn lint
+
+[% if unit_tests %]
+      - name: Unit tests
+        run: yarn test:unit
+
+[% endif %]
+      - name: Build
+        run: yarn build
+[% if exports_api_types %]
+
+      - name: Build API type artifact
+        env:
+          API_TYPES_VERSION: 0.0.0-dev
+        run: |
+          yarn build:api-types
+          tar -czf /tmp/[[ module_id ]]-api-types.tgz -C .release/api-types package
+[% endif %]
+[% else %]
+      - name: Validate manifest
+        run: jq empty module.json
+[% endif %]
