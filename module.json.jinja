@@ -15,13 +15,11 @@
 			"discord": "[[ author_discord ]]"[% endif %]
 		}
 	],
-	"relationships": {
-		"systems": [],
-		"requires": []
-	},[% if module_kind == 'code' %]
+	"relationships": [[ module_relationships | tojson(indent='\t') | indent('\t') ]],[% if module_kind == 'code' %]
 	"esmodules": [
 		"dist/[[ module_id ]].js"
-	],[% endif %][% if module_kind == 'code' and (uses_svelte or uses_styles) %]
+	],[% elif module_scripts %]
+	"scripts": [[ module_scripts | tojson(indent='\t') | indent('\t') ]],[% endif %][% if module_kind == 'code' and uses_styles %]
 	"styles": [
 		"dist/[[ module_id ]].css"
 	],[% endif %][% if localization %]
@@ -30,16 +28,17 @@
 			"lang": "en",
 			"name": "English",
 			"path": "lang/en.json"
-		}
-	],[% endif %][% if has_packs %]
-	"packs": [],[% endif %]
+		}[% for language in additional_languages %],
+		[[ language | tojson(indent='\t') | indent('\t\t') ]][% endfor %]
+	],[% endif %][% if module_packs %]
+	"packs": [[ module_packs | tojson(indent='\t') | indent('\t') ]],[% endif %]
 	"url": "https://github.com/[[ github_owner ]]/[[ repository_name ]]",
 	"manifest": "https://github.com/[[ github_owner ]]/[[ repository_name ]]/releases/latest/download/module.json",
 	"download": "https://github.com/[[ github_owner ]]/[[ repository_name ]]/releases/latest/download/module.zip",
 	"readme": "https://github.com/[[ github_owner ]]/[[ repository_name ]]/blob/[[ default_branch ]]/README.md",
-	"license": "LICENSE",
+	"license": "[[ module_license ]]",
 	"socket": [[ uses_socket | lower ]],
 	"persistentStorage": [[ persistent_storage | lower ]],
-	"media": []
+	"library": [[ is_library | lower ]],
+	"media": [[ module_media | tojson(indent='\t') | indent('\t') ]]
 }
-

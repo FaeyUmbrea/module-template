@@ -23,21 +23,21 @@ _exclude:
   - yarn.lock
   - "[[ '.github/workflows/release.yml' if release_strategy == 'custom' else '.copier-never' ]]"
   - "[[ 'tools/prepare-release.mjs' if release_strategy == 'custom' else '.copier-never' ]]"
-  - "[[ 'package.json' if module_kind == 'content' else '.copier-never' ]]"
-  - "[[ 'vite.config.ts' if module_kind == 'content' else '.copier-never' ]]"
-  - "[[ 'eslint.config.js' if module_kind == 'content' else '.copier-never' ]]"
-  - "[[ 'tsconfig.json' if module_kind == 'content' else '.copier-never' ]]"
-  - "[[ '.yarnrc.yml' if module_kind == 'content' else '.copier-never' ]]"
+  - "[[ 'package.json' if module_kind == 'content' or adopt_existing_module else '.copier-never' ]]"
+  - "[[ 'vite.config.ts' if module_kind == 'content' or adopt_existing_module else '.copier-never' ]]"
+  - "[[ 'eslint.config.js' if module_kind == 'content' or adopt_existing_module else '.copier-never' ]]"
+  - "[[ 'tsconfig.json' if module_kind == 'content' or adopt_existing_module else '.copier-never' ]]"
+  - "[[ '.yarnrc.yml' if module_kind == 'content' or adopt_existing_module else '.copier-never' ]]"
   - "[[ 'tools/foundryLink.js' if module_kind == 'content' else '.copier-never' ]]"
   - "[[ 'src/index.ts' if module_kind == 'content' else '.copier-never' ]]"
-  - "[[ 'src/api.ts' if module_kind == 'content' else '.copier-never' ]]"
-  - "[[ 'src/global.d.ts' if module_kind == 'content' else '.copier-never' ]]"
-  - "[[ 'src/styles.d.ts' if module_kind == 'content' else '.copier-never' ]]"
-  - "[[ 'src/svelte' if module_kind == 'content' or not uses_svelte else '.copier-never' ]]"
-  - "[[ 'svelte.config.js' if module_kind == 'content' or not uses_svelte else '.copier-never' ]]"
-  - "[[ 'src/styles' if module_kind == 'content' or not uses_styles else '.copier-never' ]]"
-  - "[[ 'src/example.test.ts' if module_kind == 'content' or not unit_tests else '.copier-never' ]]"
-  - "[[ 'src/public-api.ts' if module_kind == 'content' or not exports_api_types else '.copier-never' ]]"
+  - "[[ 'src/api.ts' if module_kind == 'content' or adopt_existing_module else '.copier-never' ]]"
+  - "[[ 'src/global.d.ts' if module_kind == 'content' or adopt_existing_module else '.copier-never' ]]"
+  - "[[ 'src/styles.d.ts' if module_kind == 'content' or adopt_existing_module else '.copier-never' ]]"
+  - "[[ 'src/svelte' if module_kind == 'content' or not uses_svelte or adopt_existing_module else '.copier-never' ]]"
+  - "[[ 'svelte.config.js' if module_kind == 'content' or not uses_svelte or adopt_existing_module else '.copier-never' ]]"
+  - "[[ 'src/styles' if module_kind == 'content' or not uses_styles or adopt_existing_module else '.copier-never' ]]"
+  - "[[ 'src/example.test.ts' if module_kind == 'content' or not unit_tests or adopt_existing_module else '.copier-never' ]]"
+  - "[[ 'src/public-api.ts' if module_kind == 'content' or not exports_api_types or adopt_existing_module else '.copier-never' ]]"
   - "[[ 'tsconfig.api-types.json' if module_kind == 'content' or not exports_api_types else '.copier-never' ]]"
   - "[[ 'tools/build-api-types.mjs' if module_kind == 'content' or not exports_api_types else '.copier-never' ]]"
   - "[[ 'playwright.config.js' if module_kind == 'content' or not browser_tests else '.copier-never' ]]"
@@ -100,6 +100,11 @@ module_kind:
     Content-only module: content
   default: code
 
+adopt_existing_module:
+  type: bool
+  help: Preserve an existing module's source tree instead of adding template examples
+  default: false
+
 uses_svelte:
   type: bool
   default: true
@@ -126,6 +131,43 @@ localization:
 
 has_packs:
   type: bool
+  default: false
+
+additional_languages:
+  type: yaml
+  help: Extra Foundry language declarations beyond the generated English entry
+  default: []
+
+module_packs:
+  type: yaml
+  help: Foundry compendium pack declarations
+  default: []
+
+module_scripts:
+  type: yaml
+  help: Legacy Foundry script declarations, primarily for content modules
+  default: []
+
+module_relationships:
+  type: yaml
+  help: Foundry system and module dependency declarations
+  default:
+    systems: []
+    requires: []
+
+module_media:
+  type: yaml
+  help: Foundry media declarations such as an icon
+  default: []
+
+module_license:
+  type: str
+  help: License SPDX identifier or path published in the manifest
+  default: LICENSE
+
+is_library:
+  type: bool
+  help: Declare this module as a Foundry library
   default: false
 
 uses_socket:
