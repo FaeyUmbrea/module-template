@@ -29,6 +29,12 @@ yarn add --dev @[[ github_owner | lower ]]/[[ module_id ]]-api-types@https://git
 ```
 
 Use `import type` from that package; it deliberately contains declarations only, not runtime code.
+
+The API Types workflow runs for new tags. To rebuild or backfill the artifact on an existing release, run it manually from the source branch that contains the matching API and supply the existing tag:
+
+```sh
+gh workflow run api-types.yml --ref [[ default_branch ]] -f tag=vX.Y.Z -f source_ref=[[ default_branch ]]
+```
 [% endif %]
 [% else %]
 This is a content-only Foundry VTT module. Its release workflow packages the manifest, compendiums, assets, scripts, styles, and localisation files that exist in the repository.

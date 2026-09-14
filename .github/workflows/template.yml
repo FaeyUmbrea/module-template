@@ -53,6 +53,8 @@ jobs:
           (cd release && zip -r ../module.zip .)
           unzip -t module.zip
           tar -tzf release/template-test-api-types.tgz
+          test -e .github/workflows/api-types.yml
+          grep -q workflow_dispatch .github/workflows/api-types.yml
 
       - name: Render content module
         run: >-
@@ -70,6 +72,7 @@ jobs:
           jq --exit-status . "$RUNNER_TEMP/content-module/module.json"
           test ! -e "$RUNNER_TEMP/content-module/package.json"
           test ! -e "$RUNNER_TEMP/content-module/.github/workflows/release.yml"
+          test ! -e "$RUNNER_TEMP/content-module/.github/workflows/api-types.yml"
           test ! -e "$RUNNER_TEMP/content-module/tools/prepare-release.mjs"
 
       - name: Render project-owned content module
