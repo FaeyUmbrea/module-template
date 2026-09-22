@@ -1,0 +1,21 @@
+name: Notify documentation repository
+
+on:
+  push:
+    branches:
+      - "[[ default_branch ]]"
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    if: vars.RELEASE_CHANNEL != 'premium'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger documentation update
+        uses: peter-evans/repository-dispatch@v4
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+          repository: [[ docs_repository ]]
+          event-type: submodule-update

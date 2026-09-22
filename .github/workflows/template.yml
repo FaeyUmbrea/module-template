@@ -32,6 +32,7 @@ jobs:
           --data module_title='Template Test'
           --data module_description='Rendered by template CI'
           --data exports_api_types=true
+          --data docs_repository=template/docs
           "$GITHUB_WORKSPACE" "$RUNNER_TEMP/code-module"
 
       - name: Verify code module
@@ -55,6 +56,8 @@ jobs:
           tar -tzf release/template-test-api-types.tgz
           test -e .github/workflows/api-types.yml
           grep -q workflow_dispatch .github/workflows/api-types.yml
+          test -e .github/workflows/submodule-update.yml
+          grep -q "RELEASE_CHANNEL != 'premium'" .github/workflows/submodule-update.yml
 
       - name: Render content module
         run: >-

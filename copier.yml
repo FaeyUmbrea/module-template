@@ -30,6 +30,7 @@ _exclude:
   - "[[ 'SECURITY.md' if not community_files else '.copier-never' ]]"
   - "[[ 'module.json' if not manage_manifest else '.copier-never' ]]"
   - "[[ '.github/workflows/checks.yml' if not checks_workflow else '.copier-never' ]]"
+  - "[[ '.github/workflows/submodule-update.yml' if not docs_repository else '.copier-never' ]]"
   - "[[ '.github/workflows/api-types.yml' if module_kind == 'content' or not exports_api_types else '.copier-never' ]]"
   - "[[ '.github/workflows/release.yml' if release_strategy == 'custom' else '.copier-never' ]]"
   - "[[ 'tools/prepare-release.mjs' if release_strategy == 'custom' else '.copier-never' ]]"
@@ -252,6 +253,11 @@ discord_notifications:
   type: bool
   default: false
   when: "[[ release_strategy == 'github' ]]"
+
+docs_repository:
+  type: str
+  help: Repository to notify after default-branch updates; leave empty to disable
+  default: ''
 
 exports_api_types:
   type: bool
