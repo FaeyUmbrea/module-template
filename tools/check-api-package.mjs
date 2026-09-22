@@ -50,7 +50,7 @@ async function fingerprint(directory, { ignoreReleaseMetadata = false } = {}) {
 }
 
 function baseVersion(version) {
-	const match = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z.-]+)?$/.exec(version);
+	const match = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[a-z\d.-]+)?$/i.exec(version);
 	if (!match) throw new Error(`Invalid API version ${version}`);
 	return match.slice(1, 4).join('.');
 }

@@ -12,13 +12,13 @@ async function main() {
 	if (releaseChannel !== 'public' && releaseChannel !== 'premium') {
 		throw new Error('RELEASE_CHANNEL must be either public or premium');
 	}
-	if (!/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.test(apiPackage.version)) {
+	if (!/^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)$/.test(apiPackage.version)) {
 		throw new Error(`API version must be plain semver, received ${apiPackage.version}`);
 	}
 	if (releaseChannel === 'premium' && !releaseTag) {
 		throw new Error('RELEASE_TAG is required for premium API builds');
 	}
-	if (releaseTag && !/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.test(releaseTag)) {
+	if (releaseTag && !/^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)$/.test(releaseTag)) {
 		throw new Error(`Release tag must be plain semver, received ${releaseTag}`);
 	}
 
