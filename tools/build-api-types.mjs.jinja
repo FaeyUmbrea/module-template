@@ -23,9 +23,17 @@ async function main() {
 		'--out-file',
 		path.join(outputDirectory, 'public-api.d.ts'),
 		'src/public-api.ts',
-[% else %]		'exec', 'tsc', '-p', 'tsconfig.api-types.json',
+[% else %]		'exec',
+		'tsc',
+		'-p',
+		'tsconfig.api-types.json',
 [% endif %]	], { stdio: 'inherit' });
 	if (result.status !== 0) process.exit(result.status ?? 1);
+	const peerDependencies = {};
+	for (const dependency of [
+[% for dependency in api_types_peer_dependencies %]
+		'[[ dependency ]]',[% endfor %]
+	]) peerDependencies[dependency] = sourcePackage.devDependencies[dependency];
 
 	const artifactPackage = {
 		...apiPackage,
@@ -35,9 +43,7 @@ async function main() {
 				types: './public-api.d.ts',
 			},
 		},
-		peerDependencies: {[% for dependency in api_types_peer_dependencies %]
-			'[[ dependency ]]': sourcePackage.devDependencies['[[ dependency ]]'],[% endfor %]
-		},
+		peerDependencies,
 		sideEffects: false,
 	};
 
