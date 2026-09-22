@@ -45,9 +45,12 @@ jobs:
           yarn lint
           yarn test:unit
           yarn build
-          API_TYPES_VERSION=v1.2.3 yarn build:api-types
+          yarn build:api-types
           mkdir -p release
           tar -czf release/template-test-api-types.tgz -C .release/api-types package
+          test "$(tar -xOf release/template-test-api-types.tgz package/package.json | jq -r .version)" = "1.0.0"
+          node --check tools/check-api-package.mjs
+          node --check tools/update-api-tags.mjs
           node tools/prepare-release.mjs module.json release/module.json v1.2.3 https://github.com template/test
           test "$(jq -r .version release/module.json)" = "1.2.3"
           for artifact_path in dist lang templates LICENSE README.md; do cp -R "$artifact_path" release/; done
@@ -55,6 +58,8 @@ jobs:
           unzip -t module.zip
           tar -tzf release/template-test-api-types.tgz
           test -e .github/workflows/api-types.yml
+          test -e tools/check-api-package.mjs
+          test -e tools/update-api-tags.mjs
           grep -q workflow_dispatch .github/workflows/api-types.yml
           test -e .github/workflows/submodule-update.yml
           grep -q "RELEASE_CHANNEL != 'premium'" .github/workflows/submodule-update.yml
@@ -76,6 +81,7 @@ jobs:
           test ! -e "$RUNNER_TEMP/content-module/package.json"
           test ! -e "$RUNNER_TEMP/content-module/.github/workflows/release.yml"
           test ! -e "$RUNNER_TEMP/content-module/.github/workflows/api-types.yml"
+          test ! -e "$RUNNER_TEMP/content-module/api-types"
           test ! -e "$RUNNER_TEMP/content-module/tools/prepare-release.mjs"
 
       - name: Render project-owned content module
