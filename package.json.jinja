@@ -14,8 +14,7 @@
 		"lint:fix": "eslint src tools vite.config.ts eslint.config.js --fix",
 		"link:foundry": "node tools/foundryLink.js"[% if exports_api_types %],
 		"build:api-types": "node tools/build-api-types.mjs",
-		"check:api-types": "node tools/check-api-package.mjs",
-		"tag:api-types": "node tools/update-api-tags.mjs"[% endif %][% if unit_tests %],
+		"check:api-types": "node tools/check-api-package.mjs"[% endif %][% if unit_tests %],
 		"test:unit": "vitest run"[% endif %][% if browser_tests %],
 		"test:e2e": "playwright test",
 		"test:e2e:headed": "playwright test --headed"[% endif %]
