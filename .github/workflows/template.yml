@@ -44,6 +44,7 @@ jobs:
           yarn exec tsc --noEmit
           yarn lint
           yarn test:unit
+          node --test tools/apply-distribution-license.test.mjs
           yarn build
           yarn build:api-types
           mkdir -p release
@@ -54,6 +55,9 @@ jobs:
           node tools/prepare-release.mjs module.json release/module.json v1.2.3 https://github.com template/test
           test "$(jq -r .version release/module.json)" = "1.2.3"
           for artifact_path in dist lang templates LICENSE README.md; do cp -R "$artifact_path" release/; done
+          RELEASE_CHANNEL=premium node tools/apply-distribution-license.mjs release/module.json release/LICENSE
+          test "$(jq -r .license release/module.json)" = "All Rights Reserved"
+          grep -q "All rights reserved" release/LICENSE
           (cd release && zip -r ../module.zip .)
           unzip -t module.zip
           tar -tzf release/template-test-api-types.tgz

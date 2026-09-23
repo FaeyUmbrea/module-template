@@ -69,6 +69,17 @@ jobs:
               cp -R "$artifact_path" release/
             fi
           done
+
+      - name: Apply distribution license
+        env:
+          RELEASE_CHANNEL: ${{ vars.RELEASE_CHANNEL || 'public' }}
+        run: node tools/apply-distribution-license.mjs release/module.json release/LICENSE
+
+      - name: Verify distribution license
+        run: node --test tools/apply-distribution-license.test.mjs
+
+      - name: Compress module archive
+        run: |
           (cd release && zip -r ../module.zip .)
 
       - name: Create or update GitHub release
