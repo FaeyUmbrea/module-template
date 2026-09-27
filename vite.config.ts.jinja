@@ -4,13 +4,21 @@ import { defineConfig } from 'vite';
 [% if unit_tests %]import { configDefaults } from 'vitest/config';
 [% endif %]import moduleJSON from './module.json' with { type: 'json' };
 
-const packagePath = `modules/${moduleJSON.id}`;
+const releaseChannel = process.env.RELEASE_CHANNEL ?? 'public';
+if (releaseChannel !== 'public' && releaseChannel !== 'premium') {
+	throw new Error('RELEASE_CHANNEL must be either public or premium');
+}
+const moduleId = releaseChannel === 'premium' ? `${moduleJSON.id}-premium` : moduleJSON.id;
+const packagePath = `modules/${moduleId}`;
 
 export default defineConfig(({ mode }) => ({
 	root: 'src',
 	base: `/${packagePath}/dist`,
 	publicDir: false,
 	cacheDir: '../.vite-cache',
+	define: {
+		__MODULE_ID__: JSON.stringify(moduleId),
+	},
 
 	resolve: {
 		conditions: ['browser', 'import'],

@@ -70,13 +70,13 @@ jobs:
             fi
           done
 
-      - name: Apply distribution license
+      - name: Apply distribution metadata
         env:
           RELEASE_CHANNEL: ${{ vars.RELEASE_CHANNEL || 'public' }}
-        run: node tools/apply-distribution-license.mjs release/module.json release/LICENSE
+        run: node tools/apply-distribution-metadata.mjs release/module.json release/LICENSE
 
-      - name: Verify distribution license
-        run: node --test tools/apply-distribution-license.test.mjs
+      - name: Verify distribution metadata
+        run: node --test tools/apply-distribution-metadata.test.mjs
 
       - name: Compress module archive
         run: |

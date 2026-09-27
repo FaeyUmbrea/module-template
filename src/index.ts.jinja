@@ -6,7 +6,9 @@ import type { ModuleApi } from './api.js';
 [% if uses_styles %]import './styles/main.styl';
 [% endif %]
 
-export const MODULE_ID = '[[ module_id ]]';
+declare const __MODULE_ID__: '[[ module_id ]]' | '[[ module_id ]]-premium';
+
+export const MODULE_ID = __MODULE_ID__;
 
 export const api: ModuleApi = { id: MODULE_ID };
 
