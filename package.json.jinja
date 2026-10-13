@@ -3,7 +3,7 @@
 	"version": "0.0.0",
 	"private": true,
 	"type": "module",
-	"packageManager": "yarn@4.9.2",
+	"packageManager": "yarn@4.18.1",
 	"scripts": {
 		"build": "vite build",
 		"dev": "vite --host",
@@ -20,22 +20,26 @@
 		"test:e2e:headed": "playwright test --headed"[% endif %]
 	},
 	"devDependencies": {
-		"@antfu/eslint-config": "^9.0.0",
-		"eslint": "^10.4.0",
+		"@antfu/eslint-config": "^9.5.1",
+		"eslint": "^10.12.0",
 		"eslint-plugin-antfu": "^3.2.3",
 		"eslint-plugin-format": "^2.0.1",
 		"fvtt-types": "13.346.0-beta.20251209192131",
-		"globals": "^17.6.0",
-		"rollup-plugin-visualizer": "^7.0.1",
-		"typescript": "^5.9.3",
-		"vite": "^8.0.13"[% if exports_api_types and api_types_build == 'bundle' %],
+		"globals": "^17.13.0",
+		"rollup-plugin-visualizer": "^7.1.1",
+		"typescript": "^6.0.3",
+		"vite": "^8.3.4"[% if exports_api_types and api_types_build == 'bundle' %],
 		"dts-bundle-generator": "9.5.1"[% endif %][% if uses_svelte %],
-		"@sveltejs/vite-plugin-svelte": "^7.1.2",
-		"eslint-plugin-svelte": "^3.17.1",
-		"svelte": "^5.55.7"[% endif %][% if uses_styles %],
+		"@sveltejs/vite-plugin-svelte": "^7.3.1",
+		"eslint-plugin-svelte": "^3.23.1",
+		"svelte": "^5.57.2"[% endif %][% if uses_styles %],
 		"stylus": "^0.64.0"[% endif %][% if unit_tests %],
-		"jsdom": "^29.1.1",
-		"vitest": "^4.1.6"[% endif %][% if browser_tests %],
-		"@playwright/test": "^1.60.0"[% endif %]
+		"jsdom": "^30.1.2",
+		"vitest": "^5.0.4"[% endif %][% if browser_tests %],
+		"@playwright/test": "^1.64.0"[% endif %]
+	},
+	"resolutions": {
+		"micromark-extension-math/katex": "0.18.2",
+		"oxfmt/tinypool": "2.2.0"
 	}
 }
