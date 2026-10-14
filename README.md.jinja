@@ -40,7 +40,13 @@ gh workflow run api-types.yml --ref [[ default_branch ]] -f tag=vX.Y.Z -f source
 This is a content-only Foundry VTT module. Its release workflow packages the manifest, compendiums, assets, scripts, styles, and localisation files that exist in the repository.
 [% endif %]
 
-## Template updates
+[% if module_kind == 'code' %]## Third-party notices
+
+`yarn build` generates `dist/THIRD-PARTY-NOTICES.txt` from the dependencies included in the bundle. The release ZIP includes this file with the rest of `dist`. It preserves the licence and NOTICE text supplied by those packages; a dependency without a declared licence fails the build.
+
+Run `yarn test:notices` to check the generator. Keep notices for copied source, artwork and other assets in the root `THIRD-PARTY-NOTICES.txt`; the build appends that maintained text to the generated file.
+
+[% endif %]## Template updates
 
 This repository was created from `FaeyUmbrea/module-template`. The source recorded in `.copier-answers.yml` should be `gh:FaeyUmbrea/module-template`, not a path to somebody's local checkout. With a clean worktree, update its shared machinery using:
 

@@ -3,6 +3,7 @@
 import { defineConfig } from 'vite';
 [% if unit_tests %]import { configDefaults } from 'vitest/config';
 [% endif %]import moduleJSON from './module.json' with { type: 'json' };
+import { thirdPartyNotices } from './tools/third-party-notices.mjs';
 
 const releaseChannel = process.env.RELEASE_CHANNEL ?? 'public';
 if (releaseChannel !== 'public' && releaseChannel !== 'premium') {
@@ -69,5 +70,6 @@ export default defineConfig(({ mode }) => ({
 				: {},
 		}),
 [% endif %]		visualizer(),
+		thirdPartyNotices(),
 	],
 }));
