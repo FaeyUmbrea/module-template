@@ -103,12 +103,17 @@ jobs:
             --argjson compatibility "$(jq .compatibility release/module.json)" \
             '{id: $id, release: {version: $version, manifest: $manifest, notes: $notes, compatibility: $compatibility}}' \
             > release/foundry-payload.json
+          # Retry rate limits and temporary server failures; honour Retry-After when supplied.
           curl --fail-with-body \
+            --retry 5 --retry-delay 30 --retry-max-time 300 \
+            --connect-timeout 15 --max-time 60 \
+            --output release/foundry-response.json \
             --request POST \
             --header 'Content-Type: application/json' \
             --header "Authorization: $FVTT_TOKEN" \
             --data @release/foundry-payload.json \
             https://api.foundryvtt.com/_api/packages/release_version/
+          jq -e '.status == "success"' release/foundry-response.json
 [% endif %][% if discord_notifications %]
 
       - name: Notify Discord
