@@ -1,0 +1,17 @@
+# Building an upload ZIP
+
+From the module checkout, run:
+
+```sh
+yarn package
+```
+
+This builds the module, then writes `.release/<module-id>-<version>.zip`. The version comes from `module.json`. You can upload that ZIP directly; there is no folder to compress manually.
+
+The archive includes the manifest, licence, compiled files, translations, assets, templates and compendiums that exist in the project. It excludes development dependencies and source directories. Packaging leaves the original manifest and licence unchanged.
+[% if package_distribution == 'premium' %]
+This checkout builds the premium edition and applies its existing premium distribution metadata to the staged files. The ZIP uses the premium package ID and Foundry's protected manifest URL.
+[% elif package_distribution == 'protected' %]
+The ZIP preserves this companion's package ID and licence and uses Foundry's protected manifest URL.
+[% endif %]
+The command requires `zip`, available on macOS and Linux. It creates a local upload file; it does not publish a release or upload anything.

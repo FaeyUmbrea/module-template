@@ -18,6 +18,15 @@ async function configurePackaging() {
 	metadata.scripts.package = `node tools/package-module.mjs ${distribution}`;
 	const indent = contents.match(/\n([\t ]+)"/)?.[1] ?? '\t';
 	await writeFile(filename, `${JSON.stringify(metadata, null, indent)}\n`);
+	let ignored = '';
+	try {
+		ignored = await readFile('.gitignore', 'utf8');
+	} catch (error) {
+		if (error.code !== 'ENOENT') throw error;
+	}
+	if (!ignored.split('\n').some(line => ['.release/', '/.release/'].includes(line.trim()))) {
+		await writeFile('.gitignore', `${ignored.trimEnd()}\n\n# Local upload archives and staging files\n/.release/\n`);
+	}
 }
 
 configurePackaging().catch((error) => {
