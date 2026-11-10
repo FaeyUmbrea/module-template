@@ -2,7 +2,6 @@ import { spawnSync } from 'node:child_process';
 import { cp, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
-import { applyDistributionMetadata } from './apply-distribution-metadata.mjs';
 
 /** Build an upload archive from distribution files, leaving the source manifest and licence unchanged. */
 export async function packageModule(directory, distribution = 'public') {
@@ -25,7 +24,10 @@ export async function packageModule(directory, distribution = 'public') {
 	}
 	for (const name of files) await cp(path.join(directory, name), path.join(output, name), { recursive: true });
 	const manifestPath = path.join(output, 'module.json');
-	if (distribution === 'premium') await applyDistributionMetadata('premium', manifestPath, path.join(output, 'LICENSE'));
+	if (distribution === 'premium') {
+		const { applyDistributionMetadata } = await import('./apply-distribution-metadata.mjs');
+		await applyDistributionMetadata('premium', manifestPath, path.join(output, 'LICENSE'));
+	}
 	const packaged = JSON.parse(await readFile(manifestPath, 'utf8'));
 	if (distribution !== 'public') {
 		packaged.protected = true;
@@ -44,9 +46,7 @@ export async function packageModule(directory, distribution = 'public') {
 /** Build with the selected edition before packaging its compiled distribution. */
 async function main() {
 	const distribution = process.argv[2] ?? 'public';
-	const command = process.env.npm_execpath ? process.execPath : 'yarn';
-	const args = process.env.npm_execpath ? [process.env.npm_execpath, 'build'] : ['build'];
-	const result = spawnSync(command, args, {
+	const result = spawnSync('yarn', ['build'], {
 		stdio: 'inherit',
 		env: { ...process.env, RELEASE_CHANNEL: distribution === 'premium' ? 'premium' : 'public' },
 	});
