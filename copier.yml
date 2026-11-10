@@ -11,6 +11,16 @@ _envops:
   keep_trailing_newline: true
 
 _exclude:
+  - "[[ 'src/avdata.ts' if not actor_value_tools else '.copier-never' ]]"
+  - "[[ 'src/obsUtils.ts' if not actor_value_tools else '.copier-never' ]]"
+  - "[[ 'resources/starter-overlays' if not actor_value_tools else '.copier-never' ]]"
+  - "[[ 'ignore.json' if not actor_value_tools else '.copier-never' ]]"
+  - "[[ 'src/starterOverlays.ts' if not actor_value_tools else '.copier-never' ]]"
+  - "[[ 'tools/load-resources.js' if not actor_value_tools else '.copier-never' ]]"
+  - "[[ 'extract-data.js' if not actor_value_tools else '.copier-never' ]]"
+  - "[[ 'tools/check-parity.js' if not actor_value_tools else '.copier-never' ]]"
+  - "[[ 'tools/check-parity.test.mjs' if not actor_value_tools else '.copier-never' ]]"
+  - "[[ 'resources/av-data' if not actor_value_tools else '.copier-never' ]]"
   - .git
   - .github/README.md
   - .github/workflows/template.yml
@@ -70,6 +80,8 @@ _skip_if_exists:
   - lang/**
   - packs/**
   - src/**
+  - resources/**
+  - ignore.json
   - storage/**
   - templates/**
   - tests/**
@@ -281,6 +293,11 @@ api_types_peer_dependencies:
   default:
     - fvtt-types
   when: "[[ module_kind == 'code' and exports_api_types ]]"
+
+actor_value_tools:
+  type: bool
+  help: Include actor data extraction and resource parity tools for system companions
+  default: false
 
 package_distribution:
   type: str

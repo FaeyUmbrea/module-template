@@ -150,5 +150,8 @@ vite.config.js.timestamp-*
 *.iml
 *.iws
 
+# Local actor field extraction for parity review
+/.parity/
+
 # Local upload archives and staging files
 /.release/

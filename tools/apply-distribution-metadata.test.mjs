@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-// eslint-disable-next-line test/no-import-node-test
 import test from 'node:test';
 import { applyDistributionMetadata } from './apply-distribution-metadata.mjs';
 

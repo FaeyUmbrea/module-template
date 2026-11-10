@@ -14,7 +14,9 @@
 		"typecheck": "tsc --noEmit",
 		"lint": "eslint src tools vite.config.ts eslint.config.js",
 		"lint:fix": "eslint src tools vite.config.ts eslint.config.js --fix",
-		"link:foundry": "node tools/foundryLink.js"[% if exports_api_types %],
+		"link:foundry": "node tools/foundryLink.js"[% if actor_value_tools %],
+		"checkParity": "node tools/check-parity.js",
+		"test:parity": "node --test tools/check-parity.test.mjs"[% endif %][% if exports_api_types %],
 		"build:api-types": "node tools/build-api-types.mjs",
 		"check:api-types": "node tools/check-api-package.mjs"[% endif %][% if unit_tests %],
 		"test:unit": "vitest run"[% endif %][% if browser_tests %],
@@ -22,7 +24,8 @@
 		"test:e2e:headed": "playwright test --headed"[% endif %]
 	},
 	"devDependencies": {
-		"@antfu/eslint-config": "^9.5.1",
+		"@antfu/eslint-config": "^9.5.1",[% if actor_value_tools %]
+		"@faeyumbrea/obs-utils-api-types": "latest",[% endif %]
 		"eslint": "^10.12.0",
 		"eslint-plugin-antfu": "^3.2.3",
 		"eslint-plugin-format": "^2.0.1",

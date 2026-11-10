@@ -70,6 +70,28 @@ jobs:
           grep -q workflow_dispatch .github/workflows/api-types.yml
           test ! -e .github/workflows/submodule-update.yml
 
+      - name: Render system companion tools
+        run: >-
+          pipx run copier copy --trust --vcs-ref HEAD --defaults
+          --data module_id=companion-test
+          --data module_title='Companion Test'
+          --data module_description='System companion tools'
+          --data actor_value_tools=true
+          "$GITHUB_WORKSPACE" "$RUNNER_TEMP/companion-module"
+
+      - name: Verify system companion tools
+        working-directory: ${{ runner.temp }}/companion-module
+        run: |
+          yarn install --no-immutable
+          yarn typecheck
+          yarn lint
+          yarn test:parity
+          yarn build
+          test -e extract-data.js
+          test -e ignore.json
+          test -e resources/av-data/index.json
+          test -e resources/starter-overlays/index.json
+
       - name: Render content module
         run: >-
           pipx run copier copy --trust --vcs-ref HEAD --defaults

@@ -35,4 +35,7 @@ export default antfu({
 [% endif %]	},
 
 	ignores: ['**/*.md', 'dist/**'],
+}, {
+	files: ['tools/**/*.test.mjs'],
+	rules: { 'test/no-import-node-test': 'off' },
 });
