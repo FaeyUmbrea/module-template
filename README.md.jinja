@@ -10,8 +10,11 @@ corepack enable
 yarn install
 yarn dev
 yarn build
+yarn package
 yarn lint
 ```
+
+`yarn package` builds the module and creates `.release/<module-id>-<version>.zip` for upload. It includes distribution files and third-party notices, with no source code or development dependencies. Set the version in `module.json` before packaging. Local packaging requires the `zip` command (available on macOS and Linux).
 
 Link the checkout into Foundry's modules directory once with:
 

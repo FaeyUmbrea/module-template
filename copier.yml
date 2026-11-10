@@ -281,3 +281,15 @@ api_types_peer_dependencies:
   default:
     - fvtt-types
   when: "[[ module_kind == 'code' and exports_api_types ]]"
+
+package_distribution:
+  type: str
+  help: Local ZIP metadata (public, protected package with existing identity, or separate premium edition)
+  choices:
+    Public: public
+    Protected: protected
+    Premium edition: premium
+  default: public
+
+_tasks:
+  - "node tools/configure-packaging.mjs [[ package_distribution ]]"

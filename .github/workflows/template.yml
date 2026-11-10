@@ -45,6 +45,7 @@ jobs:
           yarn test:unit
           yarn test:notices
           node --test tools/apply-distribution-metadata.test.mjs
+          yarn exec vitest run --root . tools/package-module.test.mjs
           yarn build
           test -e dist/THIRD-PARTY-NOTICES.txt
           yarn build:api-types
